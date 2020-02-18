@@ -85,8 +85,7 @@ class TwistLayer(Module):
         self.XX, self.YY = None, None
         self.disk = None
         self.radii = torch.nn.Parameter(torch.ones(nf), requires_grad=True)
-        self.radii.data.uniform_(0.3, 0.7)
-        # self.radius = np.ones(nf) * 0.7
+        self.radii.data.uniform_(0.3, 0.9)
         self.conv = conv(ni, nf, stride=stride)
         self.convx = conv(ni, nf, stride=stride)
         self.convy = conv(ni, nf, stride=stride)
