@@ -27,7 +27,7 @@ def get_data(size, woof, bs, workers=None):
  #   if   size<=128: path = URLs.IMAGEWOOF_160 if woof else URLs.IMAGENETTE_160
  #   elif size<=224: path = URLs.IMAGEWOOF_320 if woof else URLs.IMAGENETTE_320
    # else          : 
-   if woof:
+    if woof:
         path = URLs.IMAGEWOOF    # if woof 
     else:
         path = URLs.IMAGENETTE
@@ -131,6 +131,10 @@ def train(
     if gpu is None:       learn.to_parallel()
     elif num_distrib()>1: learn.to_distributed(gpu) # Requires `-m fastai.launch`
     
+    for name, param in learn.model.named_parameters():
+        if "radeii" in name:
+            print(name, param.size(), param[:5])
+
     if lrfinder:
         # run learning rate finder
         IN_NOTEBOOK = 1
@@ -142,6 +146,10 @@ def train(
         elif sched_type == 'flat_and_anneal': 
             fit_with_annealing(learn, epochs, lr, ann_start)
     
+    for name, param in learn.model.named_parameters():
+        if "radiei" in name:
+            print(name, param.size(), param[:5])
+
     return learn.recorder.metrics[-1][0]
 
 @call_parse

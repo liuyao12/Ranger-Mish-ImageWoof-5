@@ -75,8 +75,41 @@ class SimpleSelfAttention(nn.Module):
         
           
         return o.view(*size).contiguous()        
-        
+    
+def ramp(x,a=0.2):
+    return torch.where(x<1-a, torch.Tensor([1]).type(x.dtype).to(x.device),
+                 torch.where(x>1+a, torch.Tensor([0]).type(x.dtype).to(x.device), 1-(x-1+a)/(2*a)))
 
+class TwistLayer(Module):
+    def __init__(self, ni, nf, stride=1):
+        self.XX, self.YY = None, None
+        self.disk = None
+        self.radii = torch.nn.Parameter(torch.ones(nf), requires_grad=True)
+        self.radii.data.uniform_(0.3, 0.7)
+        # self.radius = np.ones(nf) * 0.7
+        self.conv = conv(ni, nf, stride=stride)
+        self.convx = conv(ni, nf, stride=stride)
+        self.convy = conv(ni, nf, stride=stride)
+
+    def forward(self, x):
+        self.convx.weight.data = (self.convx.weight-self.convx.weight.flip(2).flip(3))/2
+        # self.convy.weight.data = (self.convy.weight-self.convy.weight.flip(2).flip(3))/2
+        self.convy.weight.data = self.convx.weight.transpose(2,3).flip(2)
+        x1 = self.conv(x)
+        _,c,h,w = x1.size()
+        if self.XX is None:
+            # self.radii.data.uniform_(0.3, 0.7)
+            XX = np.indices((1,h,w))[2]*2/w-1
+            YY = np.indices((1,h,w))[1]*2/h-1
+            self.XX = torch.from_numpy(XX).type(x.dtype).to(x.device)
+            self.YY = torch.from_numpy(YY).type(x.dtype).to(x.device)
+        self.disk = ramp((self.XX**2+self.YY**2)/(self.radii**2).type(x.dtype).to(x.device).view(-1,1,1))
+        # if c==64 and h==64:
+        #     # print(self.convx.weight.shape, self.convx.weight[0,0,0,1].item())
+        #     # print(self.radii[0])
+        #     # print(self.XX.shape, self.YY.shape, self.disk.shape)
+        #     print(self.disk.shape, self.disk[0,32], self.radii[0].item())
+        return x1 + self.disk * (self.XX * self.convx(x) + self.YY * self.convy(x))
 
     
     
@@ -101,7 +134,7 @@ def noop(x): return x
 def conv_layer(ni, nf, ks=3, stride=1, zero_bn=False, act=True):
     bn = nn.BatchNorm2d(nf)
     nn.init.constant_(bn.weight, 0. if zero_bn else 1.)
-    layers = [conv(ni, nf, ks, stride=stride), bn]
+    layers = [conv(ni, nf, ks, stride=stride), bn] if ks==1 or ni<=32 else [TwistLayer(ni, nf, stride=stride), bn]
     if act: layers.append(act_fn)
     return nn.Sequential(*layers)
 
