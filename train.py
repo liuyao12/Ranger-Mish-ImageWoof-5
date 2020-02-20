@@ -37,7 +37,7 @@ def get_data(size, woof, bs, workers=None):
     if workers is None: workers = min(8, num_cpus()//n_gpus)
 
     return (ImageList.from_folder(path).split_by_folder(valid='val')
-            .label_from_folder().transform(([flip_lr(p=0.5)], []), size=size)
+            .label_from_folder().transform(([flip_lr(p=0.5)], []), size=size) # rotate(degrees=(-10,10))
             .databunch(bs=bs, num_workers=workers)
             .presize(size, scale=(0.35,1))
             .normalize(imagenet_stats))
