@@ -105,7 +105,7 @@ class TwistLayer(Module):
         _, c, h, w = x1.size()
         XX = torch.from_numpy(np.indices((1,h,w))[2]*2/w).type(x.dtype).to(x.device) - self.center_x.view(-1,1,1)
         YY = torch.from_numpy(np.indices((1,h,w))[1]*2/h).type(x.dtype).to(x.device) - self.center_y.view(-1,1,1)
-        mask = ramp_func((self.XX**2+self.YY**2)/(self.radii.type(x.dtype).to(x.device).view(-1,1,1)**2))
+        mask = ramp_func((XX**2+YY**2)/(self.radii.type(x.dtype).to(x.device).view(-1,1,1)**2))
         return x1 + mask * (XX * self.convx(x) + YY * self.convy(x))
 
     
