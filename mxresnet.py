@@ -85,8 +85,6 @@ def ramp_func(r, a=0.3):
 
 class TwistLayer(Module):
     def __init__(self, ni, nf, stride=1):
-        self.XX, self.YY = None, None
-        self.mask = None
         self.radii = torch.nn.Parameter(torch.ones(nf), requires_grad=True)
         self.center_x = torch.nn.Parameter(torch.ones(nf), requires_grad=True)
         self.center_y = torch.nn.Parameter(torch.ones(nf), requires_grad=True)
@@ -105,10 +103,10 @@ class TwistLayer(Module):
         self.convy.weight.data = self.convx.weight.transpose(2,3).flip(2)
         x1 = self.conv(x)
         _, c, h, w = x1.size()
-        self.XX = torch.from_numpy(np.indices((1,h,w))[2]*2/w).type(x.dtype).to(x.device) - self.center_x.view(-1,1,1)
-        self.YY = torch.from_numpy(np.indices((1,h,w))[1]*2/h).type(x.dtype).to(x.device) - self.center_y.view(-1,1,1)
-        self.mask = ramp_func((self.XX**2+self.YY**2)/(self.radii.type(x.dtype).to(x.device).view(-1,1,1)**2))
-        return x1 + self.mask * (self.XX * self.convx(x) + self.YY * self.convy(x))
+        XX = torch.from_numpy(np.indices((1,h,w))[2]*2/w).type(x.dtype).to(x.device) - self.center_x.view(-1,1,1)
+        YY = torch.from_numpy(np.indices((1,h,w))[1]*2/h).type(x.dtype).to(x.device) - self.center_y.view(-1,1,1)
+        mask = ramp_func((self.XX**2+self.YY**2)/(self.radii.type(x.dtype).to(x.device).view(-1,1,1)**2))
+        return x1 + mask * (XX * self.convx(x) + YY * self.convy(x))
 
     
     
@@ -133,7 +131,7 @@ def noop(x): return x
 def conv_layer(ni, nf, ks=3, stride=1, zero_bn=False, act=True):
     bn = nn.BatchNorm2d(nf)
     nn.init.constant_(bn.weight, 0. if zero_bn else 1.)
-    layers = [conv(ni, nf, ks, stride=stride), bn] if ks==1 or ni<=32 else [TwistLayer(ni, nf, stride=stride), bn]
+    layers = [conv(ni, nf, ks, stride=stride), bn] if ks==1 or nf<=32 else [TwistLayer(ni, nf, stride=stride), bn]
     if act: layers.append(act_fn)
     return nn.Sequential(*layers)
 
