@@ -193,7 +193,7 @@ epoch     train_loss  valid_loss  accuracy  top_k_accuracy  time
 
 A quick summary of the underlying mathematics:
 
-ResNet | "heat" equation
+CNN (ResNet) | PDE ("heat" equation)
 :----:|:-------:
 input layer | initial condition
 feed forward | solving the equation
