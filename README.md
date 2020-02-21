@@ -2,11 +2,11 @@
 
 see the [original repo](https://github.com/lessw2020/Ranger-Mish-ImageWoof-5)
 
-# ResNet with a twist
+# ResNet with a Twist
 
 A quick summary of the underlying mathematics:
 
-neural network | "heat" equation
+convolutional neural network | "heat" equation
 :----:|:-------:
 input layer | initial condition
 feed forward | solving the equation
@@ -20,11 +20,11 @@ e.g. 16×16×3×3 kernel | 16×16 matrix of differential operators
 16×16×1×1 kernel | 16×16 matrix of constants
 groups=2 (in Conv2d) | matrix is block diagonal (direct sum of 2 blocks)
 
-The idea is to add "variable coefficients" to the differential operators. Variables being "linear in the x and y direction" suffices to realize rotation and scaling.
+The idea of **ResNet with a Twist** is to add "variable coefficients" to the differential operators, variables being simply "linear in the x and y direction" which suffices for rotation and scaling.
 
-* been testing ideas on imagewoof, size=128, epoch=5 (not even close to the current Leaderboard)
+* been testing mostly on imagewoof, size=128, epoch=5 (at 68ish, not even close to the current Leaderboard)
 
-* had 2 runs on imagewoof, size=128, epoch=80 (both broke current best, 87.20)
+* had 2 runs on imagewoof, size=128, epoch=80 (both broke current best of 87.20)
 
 `python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 3e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1`
 ```
