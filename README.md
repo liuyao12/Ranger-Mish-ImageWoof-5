@@ -1,8 +1,28 @@
 # Ranger-Mish-ImageWoof-5
 
-see the ![original repo](https://github.com/lessw2020/Ranger-Mish-ImageWoof-5)
+see the [original repo](https://github.com/lessw2020/Ranger-Mish-ImageWoof-5)
 
 # ResNet with a twist
+
+A quick summary of the underlying mathematics:
+
+neural network | "heat" equation
+:----:|:-------:
+input layer | initial condition
+feed forward | solving the equation
+hidden layers | solution at intermediate times
+output layer | solution at final time
+convolution with 3×3 kernel | differential operator of order ≤ 2
+weights | coefficients
+boundary handling (padding) | boundary condition
+multiple channels/filters/feature_maps | system of (coupled) PDEs
+e.g. 16×16×3×3 kernel | 16×16 matrix of differential operators
+16×16×1×1 kernel | 16×16 matrix of constants
+groups=2 (in Conv2d) | matrix is block diagonal (direct sum of 2 blocks)
+
+The idea is to add "variable coefficients" to the differential operators. Variables being "linear in the x and y direction" suffices to realize rotation and scaling.
+
+been testing ideas on imagewoof, size=128, epoch=5
 
 had 2 runs on imagewoof, size=128, epoch=80
 
