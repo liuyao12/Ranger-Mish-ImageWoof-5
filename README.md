@@ -8,8 +8,8 @@ see the [original repo](https://github.com/lessw2020/Ranger-Mish-ImageWoof-5)
 
 * had 2 runs on imagewoof, size=128, epoch=80 (both broke current best of 87.20)
 
+`python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 3e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1`
 ```
-python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 3e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1
 Mish activation loaded...
 /home/hebe/.fastai/data/imagewoof2
 8121  annealing start
@@ -99,8 +99,8 @@ epoch     train_loss  valid_loss  accuracy  top_k_accuracy  time
 0.0
 ```
 
+`python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 4e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1`
 ```
-python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 4e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1
 Mish activation loaded...
 /home/hebe/.fastai/data/imagewoof2
 8121  annealing start
