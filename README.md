@@ -4,30 +4,12 @@ see the [original repo](https://github.com/lessw2020/Ranger-Mish-ImageWoof-5)
 
 # ResNet with a Twist
 
-A quick summary of the underlying mathematics:
-
-ResNet | "heat" equation
-:----:|:-------:
-input layer | initial condition
-feed forward | solving the equation
-hidden layers | solution at intermediate times
-output layer | solution at final time
-convolution with 3×3 kernel | differential operator of order ≤ 2
-weights | coefficients
-boundary handling (padding) | boundary condition
-multiple channels/filters/feature_maps | system of (coupled) PDEs
-e.g. 16×16×3×3 kernel | 16×16 matrix of differential operators
-16×16×1×1 kernel | 16×16 matrix of constants
-groups=2 (in Conv2d) | matrix is block diagonal (direct sum of 2 blocks)
-
-The idea of **ResNet with a Twist** is to add "variable coefficients" in front of the differential operators, variables being simply "linear in the x and y direction" which suffices for rotation and scaling.
-
 * been testing mostly on imagewoof, size=128, epoch=5 (at 68ish, not even close to the current Leaderboard)
 
 * had 2 runs on imagewoof, size=128, epoch=80 (both broke current best of 87.20)
 
-`python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 3e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1`
 ```
+python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 3e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1
 Mish activation loaded...
 /home/hebe/.fastai/data/imagewoof2
 8121  annealing start
@@ -117,8 +99,8 @@ epoch     train_loss  valid_loss  accuracy  top_k_accuracy  time
 0.0
 ```
 
-`python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 4e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1`
 ```
+python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 4e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1
 Mish activation loaded...
 /home/hebe/.fastai/data/imagewoof2
 8121  annealing start
@@ -207,3 +189,22 @@ epoch     train_loss  valid_loss  accuracy  top_k_accuracy  time
 0.8732502
 0.0
 ```
+
+
+A quick summary of the underlying mathematics:
+
+ResNet | "heat" equation
+:----:|:-------:
+input layer | initial condition
+feed forward | solving the equation
+hidden layers | solution at intermediate times
+output layer | solution at final time
+convolution with 3×3 kernel | differential operator of order ≤ 2
+weights | coefficients
+boundary handling (padding) | boundary condition
+multiple channels/filters/feature_maps | system of (coupled) PDEs
+e.g. 16×16×3×3 kernel | 16×16 matrix of differential operators
+16×16×1×1 kernel | 16×16 matrix of constants
+groups=2 (in Conv2d) | matrix is block diagonal (direct sum of 2 blocks)
+
+The idea of **ResNet with a Twist** is to add "variable coefficients" in front of the differential operators, variables being simply "linear in the x and y direction" which suffices for rotation and scaling.
