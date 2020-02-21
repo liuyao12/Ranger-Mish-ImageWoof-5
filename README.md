@@ -22,9 +22,9 @@ groups=2 (in Conv2d) | matrix is block diagonal (direct sum of 2 blocks)
 
 The idea is to add "variable coefficients" to the differential operators. Variables being "linear in the x and y direction" suffices to realize rotation and scaling.
 
-been testing ideas on imagewoof, size=128, epoch=5
+* been testing ideas on imagewoof, size=128, epoch=5 (not even close to the current Leaderboard)
 
-had 2 runs on imagewoof, size=128, epoch=80
+* had 2 runs on imagewoof, size=128, epoch=80 (both broke current best, 87.20)
 
 `python3 train.py --run 1 --woof 1 --size 128 --bs 64 --mixup 0 --epoch 80 --lr 3e-3 --gpu 2 --opt ranger --mom .95 --sched_type flat_and_anneal --ann_start 0.72 --sa 1`
 ```
