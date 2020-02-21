@@ -207,4 +207,4 @@ e.g. 16×16×3×3 kernel | 16×16 matrix of differential operators
 16×16×1×1 kernel | 16×16 matrix of constants
 groups=2 (in Conv2d) | matrix is block diagonal (direct sum of 2 blocks)
 
-The idea of **ResNet with a Twist** is to add "variable coefficients" in front of the differential operators, variables being simply "linear in the x and y direction" which suffices for rotation and scaling.
+The idea of **ResNet with a Twist** is to add "variable coefficients" in front of the differential operators, variables being simply "linear in the x and y direction" which suffices for *rotating* and *scaling* the feature maps.
