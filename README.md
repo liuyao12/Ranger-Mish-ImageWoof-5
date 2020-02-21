@@ -6,7 +6,7 @@ see the [original repo](https://github.com/lessw2020/Ranger-Mish-ImageWoof-5)
 
 A quick summary of the underlying mathematics:
 
-convolutional neural network | "heat" equation
+ResNet | "heat" equation
 :----:|:-------:
 input layer | initial condition
 feed forward | solving the equation
@@ -20,7 +20,7 @@ e.g. 16×16×3×3 kernel | 16×16 matrix of differential operators
 16×16×1×1 kernel | 16×16 matrix of constants
 groups=2 (in Conv2d) | matrix is block diagonal (direct sum of 2 blocks)
 
-The idea of **ResNet with a Twist** is to add "variable coefficients" to the differential operators, variables being simply "linear in the x and y direction" which suffices for rotation and scaling.
+The idea of **ResNet with a Twist** is to add "variable coefficients" in front of the differential operators, variables being simply "linear in the x and y direction" which suffices for rotation and scaling.
 
 * been testing mostly on imagewoof, size=128, epoch=5 (at 68ish, not even close to the current Leaderboard)
 
