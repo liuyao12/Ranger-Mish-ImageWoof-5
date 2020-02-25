@@ -5,7 +5,8 @@
 # adapted from https://github.com/fastai/fastai/blob/master/examples/train_imagenette.py
 # changed per gpu bs for bs_rat
 
-
+import PIL # hack to re-instate PILLOW_VERSION
+PIL.PILLOW_VERSION = PIL.__version__
 
 from fastai.script import *
 from fastai.vision import *
