@@ -98,36 +98,27 @@ def conv(ni, nf, ks=3, stride=1, bias=False):
 def noop(x): return x
 
 
-def ramp_func(r, a=0.3):
-    # r is squared distance (scaled down to 0~1) from the center of a 2d image
-    # a=0 makes it a step function
-    one = torch.ones(r.size()).type(r.dtype).to(r.device)
-    zero = torch.zeros(r.size()).type(r.dtype).to(r.device)
-    return torch.where(r<=1-a, one, torch.where(r>=1+a, zero, 1-(r-1+a)/(2*a)))
-
-class conv_twist(Module):
+class conv_twist(nn.Module):
     def __init__(self, ni, nf, stride=1):
-        # self.radii = nn.Parameter(torch.Tensor(nf), requires_grad=True)
+        super(conv_twist, self).__init__()
+        self.conv = nn.Conv2d(ni, nf, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.convx = nn.Conv2d(ni, nf, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.convy = nn.Conv2d(ni, nf, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.convx.weight.data = (self.convx.weight - self.convx.weight.flip(2).flip(3)) / 2  # make convx a first-order operator by symmetrizing it
+        self.convy.weight.data = self.convx.weight.transpose(2,3).flip(2)                     # make convy a 90 degree rotation of convx
         self.center_x = nn.Parameter(torch.Tensor(nf), requires_grad=True)
         self.center_y = nn.Parameter(torch.Tensor(nf), requires_grad=True)
-        # self.radii.data.uniform_(0.3, 0.7)
-        self.center_x.data.uniform_(-0.7, 0.7)
-        self.center_y.data.uniform_(-0.7, 0.7)
-        self.conv = conv(ni, nf, ks=3, stride=stride)
-        self.convx = conv(ni, nf, ks=3, stride=stride)
-        self.convy = conv(ni, nf, ks=3, stride=stride)
-        self.convx.weight.data = (self.convx.weight - self.convx.weight.flip(2).flip(3)) / 2
-        self.convy.weight.data = self.convx.weight.transpose(2,3).flip(2)
+        self.center_x.data.uniform_(-2.0, 2.0)
+        self.center_y.data.uniform_(-2.0, 2.0)
 
     def forward(self, x):
-        self.convx.weight.data = (self.convx.weight - self.convx.weight.flip(2).flip(3)) / 2  # make convx a first-order operator by symmetrizing it
+        self.convx.weight.data = (self.convx.weight - self.convx.weight.flip(2).flip(3)) / 2  
         self.convy.weight.data = (self.convy.weight - self.convy.weight.flip(2).flip(3)) / 2
-        # self.convy.weight.data = self.convx.weight.transpose(2,3).flip(2))                    # make convy a 90 degree rotation of convx
+        # self.convy.weight.data = self.convx.weight.transpose(2,3).flip(2))                   
         x1 = self.conv(x)
         _, c, h, w = x1.size()
         XX = torch.from_numpy(np.indices((1,h,w))[2]*2/w).type(x.dtype).to(x.device) - self.center_x.view(-1,1,1)
         YY = torch.from_numpy(np.indices((1,h,w))[1]*2/h).type(x.dtype).to(x.device) - self.center_y.view(-1,1,1)
-        # mask = ramp_func((XX**2+YY**2)/(self.radii.type(x.dtype).to(x.device).view(-1,1,1)**2))
         return x1 + (XX * self.convx(x) + YY * self.convy(x))
     
 
